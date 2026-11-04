@@ -31,6 +31,7 @@ class RailwayScene extends Phaser.Scene {
   private route: Position[] = [];
   private moves = 0;
   private solved = false;
+  private labelsDrawn = false;
 
   constructor() { super('RailwayScene'); }
 
@@ -153,11 +154,11 @@ class RailwayScene extends Phaser.Scene {
       'Origem: VERDE',
       'Destino: DOURADO'
     ]);
-    if(!this.getData('staticLabels')){
+    if(!this.labelsDrawn){
       this.add.text(754,468,'TESTAR ROTA',{fontFamily:'sans-serif',fontSize:'23px',fontStyle:'bold',color:'#1d2632'});
       this.add.text(57,42,'TRAIN LOGISTICS / MVP',{fontFamily:'sans-serif',fontSize:'29px',fontStyle:'bold',color:'#f8edda'});
       this.add.text(58,77,'Conecte os trilhos e envie o trem até o destino.',{fontFamily:'sans-serif',fontSize:'15px',color:'#b9d5c6'});
-      this.setData('staticLabels',true);
+      this.labelsDrawn = true;
     }
   }
 }
