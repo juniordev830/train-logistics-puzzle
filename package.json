@@ -1,0 +1,17 @@
+{
+  "name": "train-logistics-puzzle",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Visual railway connection puzzle with deterministic track rules",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
+    "build:rules": "tsc -p tsconfig.rules.json",
+    "test": "npm run build:rules && node --test tests/*.test.mjs"
+  },
+  "dependencies": { "phaser": "^3.90.0" },
+  "devDependencies": { "typescript": "^5.9.3", "vite": "^6.4.5" },
+  "engines": { "node": ">=20.19.0" }
+}
