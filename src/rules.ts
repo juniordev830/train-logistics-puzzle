@@ -53,13 +53,13 @@ export function traceRoute(
     if (visited.has(nextIndex)) return [];
     visited.add(nextIndex);
     const tile = tiles[nextIndex];
-    const entry = OPPOSITE[outgoing];
+    const entry: Direction = OPPOSITE[outgoing];
     const connections = ports(tile);
     if (!connections.includes(entry)) return [];
     route.push(next);
     if (tile.kind === 'end') return next.x === destination.x && next.y === destination.y ? route : [];
     if (connections.length !== 2) return [];
-    const other = connections.find(direction => direction !== entry);
+    const other: Direction | undefined = connections.find((direction: Direction) => direction !== entry);
     if (!other) return [];
     outgoing = other;
     current = next;
