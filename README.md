@@ -36,3 +36,14 @@ O protótipo possui um nível, trajetórias determinísticas, desenho geométric
 ## Evolução
 
 Níveis gerados, obstáculos, planejamento de tempo, novas locomotivas e suporte avançado a acessibilidade.
+
+
+## Desfazer e refazer edições (novo)
+
+- **Z** desfaz a última rotação de trilho.
+- **Y** refaz a rotação desfeita.
+- Se você desfizer e girar outro trilho, o histórico de refazer é descartado para evitar estados incompatíveis.
+- As 100 últimas rotações ficam disponíveis para desfazer, sem armazenar histórico indefinidamente.
+- Enquanto o trem estiver em movimento ou após a entrega, os comandos não alteram o tabuleiro. Reinicie com **R** para uma nova tentativa.
+
+O histórico imutável fica em `src/history.ts`, com testes unitários em `tests/history.test.mjs`. O contador de movimentos continua representando o total de rotações feitas na partida, inclusive aquelas posteriormente desfeitas.
