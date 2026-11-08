@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { ports, rotate, traceRoute, type Position, type Tile, type Direction } from './rules.js';
+import { createHistory, pushHistory, undoHistory, redoHistory, canUndo, canRedo, type History } from './history.js';
 
 const WIDTH = 1040, HEIGHT = 690;
 const COLS = 7, ROWS = 5, CELL = 88;
@@ -24,6 +25,7 @@ const TEST_BUTTON = new Phaser.Geom.Rectangle(735, 455, 263, 67);
 
 class RailwayScene extends Phaser.Scene {
   private tiles: Tile[] = [];
+  private history!: History<readonly Tile[]>;
   private trackGraphics!: Phaser.GameObjects.Graphics;
   private label!: Phaser.GameObjects.Text;
   private details!: Phaser.GameObjects.Text;
@@ -38,6 +40,7 @@ class RailwayScene extends Phaser.Scene {
   create(): void {
     this.tiles = Array.from({length:COLS*ROWS},()=>({kind:'empty',rotation:0}));
     for (const [x,y,tile] of VALID_TILES) this.tiles[y * COLS + x] = { ...tile };
+    this.history = createHistory([...this.tiles]);
     this.trackGraphics = this.add.graphics();
     this.details = this.add.text(752, 230, '', {fontFamily:'monospace',fontSize:'19px',color:'#eaf5d7',lineSpacing:11});
     this.label = this.add.text(746, 555, 'Clique nos trilhos para girar.', {
@@ -53,7 +56,10 @@ class RailwayScene extends Phaser.Scene {
       const i = r*COLS+c;
       const next = rotate(this.tiles[i]);
       if (next !== this.tiles[i]) {
-        this.tiles[i]=next;
+        const updated = [...this.tiles];
+        updated[i] = next;
+        this.history = pushHistory(this.history, updated);
+        this.tiles = [...this.history.present];
         this.moves++;
         this.label.setText('Trilho girado. Teste quando a rota estiver pronta.');
         this.renderScene();
@@ -61,6 +67,24 @@ class RailwayScene extends Phaser.Scene {
     });
     this.input.keyboard?.on('keydown-ENTER',()=>this.testRailway());
     this.input.keyboard?.on('keydown-R',()=>this.scene.restart());
+    this.input.keyboard?.on('keydown-Z',()=>this.undoTurn());
+    this.input.keyboard?.on('keydown-Y',()=>this.redoTurn());
+    this.renderScene();
+  }
+
+  private undoTurn(): void {
+    if (this.solved || this.trainProgress >= 0 || !canUndo(this.history)) return;
+    this.history = undoHistory(this.history);
+    this.tiles = [...this.history.present];
+    this.label.setText('Jogada desfeita. Pressione Y para refazer.');
+    this.renderScene();
+  }
+
+  private redoTurn(): void {
+    if (this.solved || this.trainProgress >= 0 || !canRedo(this.history)) return;
+    this.history = redoHistory(this.history);
+    this.tiles = [...this.history.present];
+    this.label.setText('Jogada refeita. Continue ajustando os trilhos.');
     this.renderScene();
   }
 
@@ -152,7 +176,10 @@ class RailwayScene extends Phaser.Scene {
       'Rotas:  01',
       `Movimentos: ${String(this.moves).padStart(2,'0')}`,
       'Origem: VERDE',
-      'Destino: DOURADO'
+      'Destino: DOURADO',
+      '',
+      'Z: desfazer',
+      'Y: refazer'
     ]);
     if(!this.labelsDrawn){
       this.add.text(754,468,'TESTAR ROTA',{fontFamily:'sans-serif',fontSize:'23px',fontStyle:'bold',color:'#1d2632'});
