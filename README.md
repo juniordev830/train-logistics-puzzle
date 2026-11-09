@@ -47,3 +47,7 @@ Níveis gerados, obstáculos, planejamento de tempo, novas locomotivas e suporte
 - Enquanto o trem estiver em movimento ou após a entrega, os comandos não alteram o tabuleiro. Reinicie com **R** para uma nova tentativa.
 
 O histórico imutável fica em `src/history.ts`, com testes unitários em `tests/history.test.mjs`. O contador de movimentos continua representando o total de rotações feitas na partida, inclusive aquelas posteriormente desfeitas.
+
+## Desfazer e refazer em blocos
+
+Além de **Z** e **Y** (uma jogada), use **Shift+Z** para desfazer até **5 jogadas** e **Shift+Y** para refazer até **5 jogadas**. A operação para automaticamente no começo ou fim do histórico, sem modificar snapshots anteriores nem permitir contagens inválidas. Os atalhos ficam desativados durante a animação do trem ou depois da vitória.
