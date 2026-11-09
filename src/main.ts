@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ports, rotate, traceRoute, type Position, type Tile, type Direction } from './rules.js';
-import { createHistory, pushHistory, undoHistory, redoHistory, canUndo, canRedo, type History } from './history.js';
+import { createHistory, pushHistory, undoSteps, redoSteps, canUndo, canRedo, type History } from './history.js';
 
 const WIDTH = 1040, HEIGHT = 690;
 const COLS = 7, ROWS = 5, CELL = 88;
@@ -67,24 +67,26 @@ class RailwayScene extends Phaser.Scene {
     });
     this.input.keyboard?.on('keydown-ENTER',()=>this.testRailway());
     this.input.keyboard?.on('keydown-R',()=>this.scene.restart());
-    this.input.keyboard?.on('keydown-Z',()=>this.undoTurn());
-    this.input.keyboard?.on('keydown-Y',()=>this.redoTurn());
+    this.input.keyboard?.on('keydown-Z',(event: KeyboardEvent)=>this.undoTurn(event.shiftKey ? 5 : 1));
+    this.input.keyboard?.on('keydown-Y',(event: KeyboardEvent)=>this.redoTurn(event.shiftKey ? 5 : 1));
     this.renderScene();
   }
 
-  private undoTurn(): void {
+  private undoTurn(count = 1): void {
     if (this.solved || this.trainProgress >= 0 || !canUndo(this.history)) return;
-    this.history = undoHistory(this.history);
+    const applied = Math.min(count, this.history.past.length);
+    this.history = undoSteps(this.history, count);
     this.tiles = [...this.history.present];
-    this.label.setText('Jogada desfeita. Pressione Y para refazer.');
+    this.label.setText(`${applied} jogada(s) desfeita(s). Pressione Y para refazer.`);
     this.renderScene();
   }
 
-  private redoTurn(): void {
+  private redoTurn(count = 1): void {
     if (this.solved || this.trainProgress >= 0 || !canRedo(this.history)) return;
-    this.history = redoHistory(this.history);
+    const applied = Math.min(count, this.history.future.length);
+    this.history = redoSteps(this.history, count);
     this.tiles = [...this.history.present];
-    this.label.setText('Jogada refeita. Continue ajustando os trilhos.');
+    this.label.setText(`${applied} jogada(s) refeita(s). Continue ajustando os trilhos.`);
     this.renderScene();
   }
 
@@ -178,8 +180,8 @@ class RailwayScene extends Phaser.Scene {
       'Origem: VERDE',
       'Destino: DOURADO',
       '',
-      'Z: desfazer',
-      'Y: refazer'
+      'Z / Shift+Z: desfazer 1 / 5',
+      'Y / Shift+Y: refazer 1 / 5'
     ]);
     if(!this.labelsDrawn){
       this.add.text(754,468,'TESTAR ROTA',{fontFamily:'sans-serif',fontSize:'23px',fontStyle:'bold',color:'#1d2632'});
