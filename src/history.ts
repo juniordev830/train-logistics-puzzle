@@ -54,3 +54,27 @@ export function canUndo<T>(history: History<T>): boolean {
 export function canRedo<T>(history: History<T>): boolean {
   return history.future.length > 0;
 }
+
+/** Rewind several moves without modifying earlier timeline snapshots. */
+export function undoSteps<T>(history: History<T>, count: number): History<T> {
+  if (!Number.isSafeInteger(count) || count < 0 || count > 1000) {
+    throw new RangeError('Step count must be from 0 to 1000');
+  }
+  let current = history;
+  for (let step = 0; step < count && canUndo(current); step += 1) {
+    current = undoHistory(current);
+  }
+  return current;
+}
+
+/** Replay several moves, stopping at the end of the redo history. */
+export function redoSteps<T>(history: History<T>, count: number): History<T> {
+  if (!Number.isSafeInteger(count) || count < 0 || count > 1000) {
+    throw new RangeError('Step count must be from 0 to 1000');
+  }
+  let current = history;
+  for (let step = 0; step < count && canRedo(current); step += 1) {
+    current = redoHistory(current);
+  }
+  return current;
+}
