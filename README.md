@@ -1,8 +1,8 @@
 # Train Logistics Puzzle
 
-Jogo de raciocínio ferroviário **em concepção**, sobre planejamento de trilhos e chegada de trens a destinos.
+Puzzle ferroviário com **motor determinístico de trilhos em Python**. O código já valida conexões, lacunas, curvas e chegada ao destino; edição visual do mapa e jogo 2D estão no roteiro futuro.
 
-> **Estado atual:** ainda não há código, biblioteca de mapas, interface ou testes. Este documento especifica a primeira versão a desenvolver.
+> **Estado da `main`:** `core.py`, testes automatizados e workflow de CI. O puzzle funciona como simulação de domínio, **sem interface gráfica**.
 
 ## Primeiro puzzle
 
@@ -26,15 +26,15 @@ Mapa de grade com uma estação de origem, um destino e peças de trilho colocad
 
 ## Plano de código
 
-- [ ] Modelo independente de grade, células e conectores.
-- [ ] Testes de validação de caminhos e estados finais.
-- [ ] Simulação passo a passo sem renderização.
+- [x] Modelo independente de grade, células e conectores.
+- [x] Testes de validação de caminhos e estados finais.
+- [x] Simulação passo a passo sem renderização.
 - [ ] Interface 2D com edição visual dos trilhos.
 - [ ] Persistência de níveis e instruções de execução.
 
 O MVP é um jogo de puzzle, não um simulador de operação ferroviária real.
 
-## Primeiro incremento de código (em revisão)
+## Primeiro incremento de código (disponível na `main`)
 
 Grade ferroviária e simulação passo a passo de trilhos compatíveis, lacunas, curvas e chegada.
 
