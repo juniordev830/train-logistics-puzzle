@@ -33,15 +33,21 @@ class RailwayScene extends Phaser.Scene {
   private route: Position[] = [];
   private moves = 0;
   private solved = false;
-  private labelsDrawn = false;
 
   constructor() { super('RailwayScene'); }
 
   create(): void {
+    this.trainProgress = -1;
+    this.route = [];
+    this.moves = 0;
+    this.solved = false;
     this.tiles = Array.from({length:COLS*ROWS},()=>({kind:'empty',rotation:0}));
     for (const [x,y,tile] of VALID_TILES) this.tiles[y * COLS + x] = { ...tile };
     this.history = createHistory([...this.tiles]);
     this.trackGraphics = this.add.graphics();
+    this.add.text(754,468,'TESTAR ROTA',{fontFamily:'sans-serif',fontSize:'23px',fontStyle:'bold',color:'#1d2632'});
+    this.add.text(57,42,'TRAIN LOGISTICS / MVP',{fontFamily:'sans-serif',fontSize:'29px',fontStyle:'bold',color:'#f8edda'});
+    this.add.text(58,77,'Conecte os trilhos e envie o trem até o destino.',{fontFamily:'sans-serif',fontSize:'15px',color:'#b9d5c6'});
     this.details = this.add.text(752, 230, '', {fontFamily:'monospace',fontSize:'19px',color:'#eaf5d7',lineSpacing:11});
     this.label = this.add.text(746, 555, 'Clique nos trilhos para girar.', {
       fontFamily:'sans-serif',fontSize:'15px',color:'#f8e7bf',wordWrap:{width:246},lineSpacing:7
@@ -168,10 +174,10 @@ class RailwayScene extends Phaser.Scene {
     }
     g.fillStyle(0xffd080);
     g.fillRoundedRect(TEST_BUTTON.x,TEST_BUTTON.y,TEST_BUTTON.width,TEST_BUTTON.height,12);
-    this.addOrUpdateTexts();
+    this.updateDetails();
   }
 
-  private addOrUpdateTexts():void {
+  private updateDetails():void {
     this.details.setText([
       'CENTRAL FERROVIÁRIA',
       '',
@@ -183,12 +189,6 @@ class RailwayScene extends Phaser.Scene {
       'Z / Shift+Z: desfazer 1 / 5',
       'Y / Shift+Y: refazer 1 / 5'
     ]);
-    if(!this.labelsDrawn){
-      this.add.text(754,468,'TESTAR ROTA',{fontFamily:'sans-serif',fontSize:'23px',fontStyle:'bold',color:'#1d2632'});
-      this.add.text(57,42,'TRAIN LOGISTICS / MVP',{fontFamily:'sans-serif',fontSize:'29px',fontStyle:'bold',color:'#f8edda'});
-      this.add.text(58,77,'Conecte os trilhos e envie o trem até o destino.',{fontFamily:'sans-serif',fontSize:'15px',color:'#b9d5c6'});
-      this.labelsDrawn = true;
-    }
   }
 }
 
