@@ -91,3 +91,17 @@ test('multi-step navigation rejects invalid counts', () => {
     assert.throws(() => redoSteps(h, bad), RangeError);
   }
 });
+
+test('bulk rewind and replay equal sequential moves across a full timeline', () => {
+  let h = createHistory(0, 1000);
+  for (let step = 1; step <= 1001; step++) h = pushHistory(h, step);
+  const rewind = undoSteps(h, 750);
+  const repeat = (state, count, navigate) => {
+    for (let i = 0; i < count; i++) state = navigate(state);
+    return state;
+  };
+  assert.deepEqual(rewind, repeat(h, 750, undoHistory));
+  assert.deepEqual(undoSteps(rewind, 250), repeat(rewind, 250, undoHistory));
+  assert.deepEqual(redoSteps(rewind, 750), repeat(rewind, 750, redoHistory));
+  assert.deepEqual(redoSteps(rewind, 1000), h);
+});

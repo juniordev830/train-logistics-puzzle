@@ -60,11 +60,15 @@ export function undoSteps<T>(history: History<T>, count: number): History<T> {
   if (!Number.isSafeInteger(count) || count < 0 || count > 1000) {
     throw new RangeError('Step count must be from 0 to 1000');
   }
-  let current = history;
-  for (let step = 0; step < count && canUndo(current); step += 1) {
-    current = undoHistory(current);
-  }
-  return current;
+  const steps = Math.min(count, history.past.length);
+  if (steps === 0) return history;
+  const index = history.past.length - steps;
+  return {
+    ...history,
+    present: history.past[index],
+    past: history.past.slice(0, index),
+    future: [...history.past.slice(index + 1), history.present, ...history.future]
+  };
 }
 
 /** Replay several moves, stopping at the end of the redo history. */
@@ -72,9 +76,12 @@ export function redoSteps<T>(history: History<T>, count: number): History<T> {
   if (!Number.isSafeInteger(count) || count < 0 || count > 1000) {
     throw new RangeError('Step count must be from 0 to 1000');
   }
-  let current = history;
-  for (let step = 0; step < count && canRedo(current); step += 1) {
-    current = redoHistory(current);
-  }
-  return current;
+  const steps = Math.min(count, history.future.length);
+  if (steps === 0) return history;
+  return {
+    ...history,
+    present: history.future[steps - 1],
+    past: [...history.past, history.present, ...history.future.slice(0, steps - 1)].slice(-history.limit),
+    future: history.future.slice(steps)
+  };
 }
