@@ -1,5 +1,7 @@
 # Train Logistics Puzzle
 
+**Navegação** · [Núcleo Python e planejamento](#núcleo-python-e-planejamento) · [Código e estudo](docs/ENGENHARIA_REVERSA.md)
+
 ## Jogo de navegador em Phaser
 
 **Status:** MVP 2D de puzzle ferroviário em navegador com Phaser 3 e TypeScript.
@@ -105,3 +107,9 @@ python -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
 O GitHub Actions executa a suíte em cada PR. A lista de tarefas do roteiro acima descreve o objetivo completo do jogo e não deve ser interpretada como pronto para publicação.
+
+## Código e roteiro de estudo
+
+Como detectar um ciclo na grade e evitar que a prévia de rota fique presa? O [guia de engenharia reversa](docs/ENGENHARIA_REVERSA.md) reúne o mapa dos módulos e uma pergunta técnica baseada no projeto.
+
+Mantido por [João Junior](https://github.com/juniordev830).
